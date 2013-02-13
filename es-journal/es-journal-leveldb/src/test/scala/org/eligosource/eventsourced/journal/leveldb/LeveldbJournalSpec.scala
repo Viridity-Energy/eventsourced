@@ -55,26 +55,37 @@ object LeveldbJournalPSSpec {
   val journalDir = new File("es-journal/es-journal-leveldb/target/journal")
 }
 
+import LeveldbJournalPSSpec.journalDir
+
 class LeveldbJournalPSDefaultSpec extends LeveldbJournalPSSpec with BeforeAndAfterEach {
-  def journalProps = LeveldbJournalProps(LeveldbJournalPSSpec.journalDir)
+  def journalProps = LeveldbJournalProps(journalDir)
 
   override def afterEach() {
-    FileUtils.deleteDirectory(LeveldbJournalPSSpec.journalDir)
+    FileUtils.deleteDirectory(journalDir)
   }
 }
 
 class LeveldbJournalPSThrottledSpec extends LeveldbJournalPSSpec with BeforeAndAfterEach {
-  def journalProps = LeveldbJournalProps(LeveldbJournalPSSpec.journalDir).withThrottledReplay(10000)
+  def journalProps = LeveldbJournalProps(journalDir).withThrottledReplay(10000)
 
   override def afterEach() {
-    FileUtils.deleteDirectory(LeveldbJournalPSSpec.journalDir)
+    FileUtils.deleteDirectory(journalDir)
+  }
+}
+
+class LeveldbJournalCWSpec extends LeveldbJournalPSSpec with BeforeAndAfterEach {
+  def journalProps = LeveldbJournalProps(journalDir).withAsyncWrite(true)
+
+  override def afterEach() {
+    FileUtils.deleteDirectory(journalDir)
   }
 }
 
 class LeveldbJournalSSSpec extends JournalSpec with BeforeAndAfterEach {
-  def journalProps = LeveldbJournalProps(LeveldbJournalPSSpec.journalDir).withSequenceStructure
+  def journalProps = LeveldbJournalProps(journalDir).withSequenceStructure
 
   override def afterEach() {
-    FileUtils.deleteDirectory(LeveldbJournalPSSpec.journalDir)
+    FileUtils.deleteDirectory(journalDir)
   }
 }
+

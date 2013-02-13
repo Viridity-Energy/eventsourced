@@ -67,7 +67,10 @@ case class LeveldbJournalProps(
   checksum: Boolean = false,
   processorStructured: Boolean = true,
   throttleAfter: Int = 0,
-  throttleFor: FiniteDuration = 100 milliseconds) extends JournalProps {
+  throttleFor: FiniteDuration = 100 milliseconds,
+  private [eventsourced] asyncWrite: Boolean = false,
+  private [eventsourced] asyncWriteTimeout: FiniteDuration = 30 seconds,
+  private [eventsourced] asyncWriterCount: Int = 5) extends JournalProps {
 
   /**
    *  Returns `false` if entries are primarily ordered by processor id,
@@ -150,10 +153,25 @@ case class LeveldbJournalProps(
   def withThrottledReplay(throttleAfter: Int, throttleFor: FiniteDuration = 100 milliseconds) =
     copy(throttleAfter = throttleAfter, throttleFor = throttleFor)
 
+  // EXPERIMENTAL
+  private [eventsourced] def withAsyncWrite(asyncWrite: Boolean) =
+    copy(asyncWrite = asyncWrite)
+
+  // EXPERIMENTAL
+  private [eventsourced] def withAsyncWriteTimeout(asyncWriteTimeout: FiniteDuration) =
+    copy(asyncWriteTimeout = asyncWriteTimeout)
+
+  // EXPERIMENTAL
+  private [eventsourced] def withAsyncWriterCount(asyncWriterCount: Int) =
+    copy(asyncWriterCount = asyncWriterCount)
+
   def journal: Actor = {
     import LeveldbReplay._
 
-    if (throttledReplay) {
+    if (asyncWrite) {
+      // EXPERIMENTAL
+      new LeveldbJournalCW(this, defaultReplayStrategy)
+    } else if (throttledReplay) {
       new LeveldbJournalPS(this, throttledReplayStrategy)
     } else if (processorStructured) {
       new LeveldbJournalPS(this, defaultReplayStrategy)

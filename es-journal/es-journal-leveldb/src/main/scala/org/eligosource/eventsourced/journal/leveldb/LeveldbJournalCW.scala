@@ -44,6 +44,8 @@ private [journal] class LeveldbJournalCW(props: LeveldbJournalProps, replayStrat
   implicit def msgToBytes(msg: Message): Array[Byte] = serialization.serializeMessage(msg)
   implicit def msgFromBytes(bytes: Array[Byte]): Message = serialization.deserializeMessage(bytes)
 
+  def journalProps = props
+
   def asyncWriteTimeout = props.asyncWriteTimeout
   def asyncWriterCount = props.asyncWriterCount
 

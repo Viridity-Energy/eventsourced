@@ -39,7 +39,7 @@ For persisting event messages, *Eventsourced* currently provides the following j
 - A [Journal.IO](https://github.com/sbtourist/Journal.IO) based journal (see also [`JournalioJournalProps`](http://eligosource.github.com/eventsourced/api/snapshot/#org.eligosource.eventsourced.journal.journalio.JournalioJournalProps)). 
 - An in-memory journal for testing purposes (see also [`InmemJournalProps`](http://eligosource.github.com/eventsourced/api/snapshot/#org.eligosource.eventsourced.journal.inmem.InmemJournalProps)).
 
-Distributed journal implementations (e.g. based on [Apache BookKeeper](http://zookeeper.apache.org/bookkeeper/) or [Amazon DynamoDB](http://aws.amazon.com/en/dynamodb/)) as well as event archives (for long-term event storage) will come soon.
+Distributed journal implementations based on [Apache HBase](http://hbase.apache.org/) and [Amazon DynamoDB](http://aws.amazon.com/en/dynamodb/) will come soon.
 
 Resources
 ---------
@@ -482,7 +482,7 @@ A reliable request-reply channel is a pattern implemented on top of a [reliable 
 A reliable request-reply channel is created and registered in the same way as a reliable channel except that a [`ReliableRequestReplyChannelProps`](http://eligosource.github.com/eventsourced/api/snapshot/#org.eligosource.eventsourced.patterns.ReliableRequestReply$ReliableRequestReplyChannelProps) configuration object is used. 
 
     // … 
-    import org.eligosource.eventsourced.patterns._
+    import org.eligosource.eventsourced.patterns.reliable.requestreply._
 
     val channel: ActorRef = extension.channelOf(ReliableRequestReplyChannelProps(channelId, destination))
 
